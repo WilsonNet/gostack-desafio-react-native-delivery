@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
 
   async function handleNavigate(id: number): Promise<void> {
     // Navigate do ProductDetails page
-    navigation.navigate('ProductDetails');
+    navigation.navigate('FoodDetails', { id });
   }
 
   useEffect(() => {
@@ -85,7 +85,6 @@ const Dashboard: React.FC = () => {
       const categoriesResponse: Category[] = (await api.get('/categories'))
         .data;
       setCategories(categoriesResponse);
-      console.log(categories);
     }
 
     loadCategories();
