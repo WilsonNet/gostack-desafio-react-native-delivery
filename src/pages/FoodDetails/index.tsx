@@ -88,9 +88,12 @@ const FoodDetails: React.FC = () => {
   }, [routeParams]);
 
   function handleExtraQuantity(id: number, value: number): void {
-    const updatedExtras = extras.map(extra =>
-      id === extra.id ? { ...extra, quantity: value + value } : extra,
-    );
+    const updatedExtras = extras.map(extra => {
+      if (id === extra.id && extra.quantity + value >= 0) {
+        return { ...extra, quantity: extra.quantity + value };
+      }
+      return extra;
+    });
     setExtras(updatedExtras);
   }
 
