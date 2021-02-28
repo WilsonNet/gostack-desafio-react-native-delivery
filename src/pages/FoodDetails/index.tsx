@@ -139,11 +139,16 @@ const FoodDetails: React.FC = () => {
   }, [isFavorite, food]);
 
   const cartTotal = useMemo(() => {
-    // Calculate cartTotal
+    const extrasPrice = extras.reduce(
+      (acc: number, extra) => acc + extra.quantity * extra.value,
+      0,
+    );
+    const finalPrice = foodQuantity * (Number(food.price) + extrasPrice);
+    return formatValue(finalPrice);
   }, [extras, food, foodQuantity]);
 
   async function handleFinishOrder(): Promise<void> {
-    // Finish the order and save on the API
+    await api.post('/orders', { ...food, extras });
   }
 
   // Calculate the correct icon name
