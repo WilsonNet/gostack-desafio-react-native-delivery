@@ -34,8 +34,15 @@ const Orders: React.FC = () => {
     async function loadOrders(): Promise<void> {
       // Load orders from API
       try {
-        const ordersResponse = (await api.get('/orders')).data;
-        setOrders(ordersResponse);
+        const ordersResponse: Omit<Food, 'formattedPrice'>[] = (
+          await api.get('/orders')
+        ).data;
+        setOrders(
+          ordersResponse.map(order => ({
+            ...order,
+            formattedPrice: formatValue(order.price),
+          })),
+        );
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
