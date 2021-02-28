@@ -76,11 +76,16 @@ const FoodDetails: React.FC = () => {
       // Load a specific food with extras based on routeParams id
       try {
         const { id } = routeParams;
-        const foodResponse: Food = (await api.get(`/foods/${id}`)).data;
+        const foodResponse: Omit<Food, 'formattedPrice'> = (
+          await api.get(`/foods/${id}`)
+        ).data;
         const isFavoriteResponse = (await api.get(`/favorites?id=${id}`)).data;
         console.log('loadFood -> isFavoriteResponse', isFavoriteResponse);
         setIsFavorite(isFavoriteResponse.length > 0);
-        setFood(foodResponse);
+        setFood({
+          ...foodResponse,
+          formattedPrice: formatValue(foodResponse.price),
+        });
         const extractedExtras = foodResponse.extras.map(foodExtra => ({
           ...foodExtra,
           quantity: 0,
