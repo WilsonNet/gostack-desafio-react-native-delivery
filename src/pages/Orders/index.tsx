@@ -33,6 +33,13 @@ const Orders: React.FC = () => {
   useEffect(() => {
     async function loadOrders(): Promise<void> {
       // Load orders from API
+      try {
+        const ordersResponse = (await api.get('/orders')).data;
+        setOrders(ordersResponse);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     }
 
     loadOrders();
