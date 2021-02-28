@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView } from 'react-native';
+import { Image, ScrollView, Text } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -60,18 +60,28 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     async function loadFoods(): Promise<void> {
       // Load Foods from API
+      try {
+        const foodResponse: Food[] = (await api.get('/foods')).data;
+        setFoods(foodResponse);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     loadFoods();
-  }, [selectedCategory, searchValue]);
+  }, [setFoods]);
 
   useEffect(() => {
     async function loadCategories(): Promise<void> {
       // Load categories from API
+      const categoriesResponse: Category[] = (await api.get('/categories'))
+        .data;
+      setCategories(categoriesResponse);
+      console.log(categories);
     }
 
     loadCategories();
-  }, []);
+  }, [setCategories]);
 
   function handleSelectCategory(id: number): void {
     // Select / deselect category
