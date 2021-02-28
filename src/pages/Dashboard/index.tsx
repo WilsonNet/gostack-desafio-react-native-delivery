@@ -63,14 +63,13 @@ const Dashboard: React.FC = () => {
       // Load Foods from API
       try {
         let route: string;
-        if (searchValue) route = `/foods?q=${searchValue}`;
+        if (searchValue) route = `/foods?name_like=${searchValue}`;
         else if (selectedCategory) {
-          route = `/foods?category=${selectedCategory}`;
+          route = `/foods?category_like=${selectedCategory}`;
         } else {
           route = '/foods';
         }
         const foodResponse: Food[] = (await api.get(route)).data;
-        console.log('loadFoods -> foodResponse', foodResponse);
         setFoods(foodResponse);
       } catch (error) {
         console.error(error);
