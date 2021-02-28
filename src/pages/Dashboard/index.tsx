@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, Text } from 'react-native';
+import { Image, ScrollView } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -62,9 +62,13 @@ const Dashboard: React.FC = () => {
     async function loadFoods(): Promise<void> {
       // Load Foods from API
       try {
-        const route = selectedCategory
-          ? `/foods?category=${selectedCategory}`
-          : '/foods';
+        let route: string;
+        if (searchValue) route = `/foods?q=${searchValue}`;
+        else if (selectedCategory) {
+          route = `/foods?category=${selectedCategory}`;
+        } else {
+          route = '/foods';
+        }
         const foodResponse: Food[] = (await api.get(route)).data;
         console.log('loadFoods -> foodResponse', foodResponse);
         setFoods(foodResponse);
@@ -74,7 +78,7 @@ const Dashboard: React.FC = () => {
     }
 
     loadFoods();
-  }, [setFoods, selectedCategory]);
+  }, [selectedCategory, searchValue]);
 
   useEffect(() => {
     async function loadCategories(): Promise<void> {
