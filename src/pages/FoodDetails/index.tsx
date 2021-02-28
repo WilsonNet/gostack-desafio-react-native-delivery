@@ -38,6 +38,7 @@ import {
   ButtonText,
   IconContainer,
 } from './styles';
+import { Extrapolate } from 'react-native-reanimated';
 
 interface Params {
   id: number;
@@ -79,17 +80,17 @@ const FoodDetails: React.FC = () => {
         const foodResponse: Omit<Food, 'formattedPrice'> = (
           await api.get(`/foods/${id}`)
         ).data;
-        const isFavoriteResponse = (await api.get(`/favorites?id=${id}`)).data;
-        console.log('loadFood -> isFavoriteResponse', isFavoriteResponse);
-        setIsFavorite(isFavoriteResponse.length > 0);
+
         setFood({
           ...foodResponse,
           formattedPrice: formatValue(foodResponse.price),
         });
-        const extractedExtras = foodResponse.extras.map(foodExtra => ({
-          ...foodExtra,
-          quantity: 0,
-        }));
+        const extractedExtras = foodResponse.extras.map(
+          (foodExtra: Omit<Extra, 'quantity'>) => ({
+            ...foodExtra,
+            quantity: 0,
+          }),
+        );
         setExtras(extractedExtras);
       } catch (error) {
         console.log('loadFood -> error', error);
@@ -97,6 +98,16 @@ const FoodDetails: React.FC = () => {
     }
 
     loadFood();
+  }, [routeParams]);
+
+  useEffect(() => {
+    // Load Favorite
+    const { id } = routeParams;
+    async function loadFavorite(): Promise<void> {
+      const isFavoriteResponse = (await api.get(`/favorites?id=${id}`)).data;
+      setIsFavorite(isFavoriteResponse.length > 0);
+    }
+    loadFavorite();
   }, [routeParams]);
 
   function handleExtraQuantity(id: number, value: number): void {
@@ -148,7 +159,8 @@ const FoodDetails: React.FC = () => {
       (acc: number, extra) => acc + extra.quantity * extra.value,
       0,
     );
-    const finalPrice = foodQuantity * (Number(food.price) + extrasPrice);
+    const foodTotal = extrasPrice + food.price;
+    const finalPrice = foodTotal * foodQuantity;
     return formatValue(finalPrice);
   }, [extras, food, foodQuantity]);
 
