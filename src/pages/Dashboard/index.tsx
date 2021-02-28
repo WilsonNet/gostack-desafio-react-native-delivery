@@ -62,16 +62,22 @@ const Dashboard: React.FC = () => {
     async function loadFoods(): Promise<void> {
       // Load Foods from API
       try {
-        let route: string;
-        if (searchValue) route = `/foods?name_like=${searchValue}`;
-        else if (selectedCategory) {
-          route = `/foods?category_like=${selectedCategory}`;
-        } else {
-          route = '/foods';
-        }
-        const foodResponse: Food[] = (await api.get(route)).data;
-        setFoods(foodResponse);
+        const foodResponse: Food[] = (
+          await api.get('/foods', {
+            params: {
+              category_like: selectedCategory,
+              name_like: searchValue,
+            },
+          })
+        ).data;
+        setFoods(
+          foodResponse.map(food => ({
+            ...food,
+            formattedPrice: formatValue(food.price),
+          })),
+        );
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       }
     }
