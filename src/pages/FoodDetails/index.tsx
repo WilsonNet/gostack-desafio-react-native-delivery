@@ -77,17 +77,29 @@ const FoodDetails: React.FC = () => {
       const { id } = routeParams;
       const foodResponse: Food = (await api.get(`/foods/${id}`)).data;
       setFood(foodResponse);
+      const extractedExtras = foodResponse.extras.map(foodExtra => ({
+        ...foodExtra,
+        quantity: 0,
+      }));
+      setExtras(extractedExtras);
     }
 
     loadFood();
   }, [routeParams]);
 
+  function handleExtraQuantity(id: number, value: number): void {
+    const updatedExtras = extras.map(extra =>
+      id === extra.id ? { ...extra, quantity: value + value } : extra,
+    );
+    setExtras(updatedExtras);
+  }
+
   function handleIncrementExtra(id: number): void {
-    // Increment extra quantity
+    handleExtraQuantity(id, 1);
   }
 
   function handleDecrementExtra(id: number): void {
-    // Decrement extra quantity
+    handleExtraQuantity(id, -1);
   }
 
   function handleIncrementFood(): void {
